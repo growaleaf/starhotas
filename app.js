@@ -1,3 +1,6 @@
+// Set after the Stripe payment link is created (see STRIPE.md).
+const PRO_PAYMENT_LINK_URL = "https://buy.stripe.com/eVqbJ3cuI8id0wYddpfrW31";
+
 function computeFit(controller, role) {
   const totalSlots = controller.buttons + controller.axes + controller.hats;
   let remaining = totalSlots;
@@ -93,6 +96,7 @@ function renderResult(controller, role) {
 }
 
 function populateSelect(select, items, nameKey) {
+  select.innerHTML = "";
   items.forEach(function (item) {
     const opt = document.createElement("option");
     opt.value = item.id;
@@ -101,17 +105,96 @@ function populateSelect(select, items, nameKey) {
   });
 }
 
+function isPro(item) {
+  return item.tier === "pro";
+}
+
+function updateUnlockUI(unlocked) {
+  const unlockSection = document.getElementById("unlock-section");
+  const proControllers = CONTROLLERS.filter(isPro).length;
+  const proRoles = ROLES.filter(isPro).length;
+
+  if (unlocked) {
+    unlockSection.innerHTML = "";
+    const p = el("p", "unlock-status", "Pro unlocked — all controllers and ship roles available.");
+    unlockSection.appendChild(p);
+    return;
+  }
+
+  unlockSection.innerHTML = "";
+  const buyP = document.createElement("p");
+  const buyLink = el("a", "btn-buy", "Unlock all " + (CONTROLLERS.length) + " controllers / " + (ROLES.length) + " ship roles — $9 one time");
+  buyLink.href = PRO_PAYMENT_LINK_URL;
+  buyLink.target = "_blank";
+  buyLink.rel = "noopener noreferrer";
+  buyP.appendChild(buyLink);
+  buyP.appendChild(document.createTextNode(" (adds " + proControllers + " more controllers, " + proRoles + " more ship roles)"));
+  unlockSection.appendChild(buyP);
+
+  const form = document.createElement("form");
+  form.className = "license-form";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Already purchased? Paste your license key";
+  input.id = "license-input";
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.textContent = "Activate";
+  const msg = el("span", "license-msg", "");
+  form.appendChild(input);
+  form.appendChild(submit);
+  form.appendChild(msg);
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    verifyLicense(input.value).then(function (res) {
+      if (res.ok) {
+        storeLicense(input.value);
+        refreshTierAndRender();
+      } else {
+        msg.textContent = res.reason;
+        msg.className = "license-msg license-error";
+      }
+    });
+  });
+  unlockSection.appendChild(form);
+}
+
+let unlockedState = false;
+
+function visibleControllers() {
+  return unlockedState ? CONTROLLERS : CONTROLLERS.filter(function (c) { return !isPro(c); });
+}
+function visibleRoles() {
+  return unlockedState ? ROLES : ROLES.filter(function (r) { return !isPro(r); });
+}
+
+function refreshTierAndRender() {
+  loadStoredLicense().then(function (license) {
+    unlockedState = !!license;
+    updateUnlockUI(unlockedState);
+
+    const controllerSelect = document.getElementById("controller-select");
+    const roleSelect = document.getElementById("role-select");
+    const prevController = controllerSelect.value;
+    const prevRole = roleSelect.value;
+
+    populateSelect(controllerSelect, visibleControllers(), "name");
+    populateSelect(roleSelect, visibleRoles(), "role_name");
+
+    controllerSelect.value = visibleControllers().some(function (c) { return c.id === prevController; })
+      ? prevController : "t-flight-hotas-4";
+    roleSelect.value = visibleRoles().some(function (r) { return r.id === prevRole; })
+      ? prevRole : "explorer-scanner";
+
+    const controller = CONTROLLERS.find(function (c) { return c.id === controllerSelect.value; });
+    const role = ROLES.find(function (r) { return r.id === roleSelect.value; });
+    renderResult(controller, role);
+  });
+}
+
 function init() {
   const controllerSelect = document.getElementById("controller-select");
   const roleSelect = document.getElementById("role-select");
-
-  populateSelect(controllerSelect, CONTROLLERS, "name");
-  populateSelect(roleSelect, ROLES, "role_name");
-
-  const defaultControllerId = "t-flight-hotas-4";
-  const defaultRoleId = "explorer-scanner";
-  controllerSelect.value = defaultControllerId;
-  roleSelect.value = defaultRoleId;
 
   function update() {
     const controller = CONTROLLERS.find(function (c) { return c.id === controllerSelect.value; });
@@ -122,7 +205,7 @@ function init() {
   controllerSelect.addEventListener("change", update);
   roleSelect.addEventListener("change", update);
 
-  update();
+  refreshTierAndRender();
 }
 
 document.addEventListener("DOMContentLoaded", init);

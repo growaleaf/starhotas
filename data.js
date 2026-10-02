@@ -66,6 +66,32 @@ const CONTROLLERS = [
     sources: [
       { label: "Thrustmaster — T.16000M FCS product page (single unit: 16 buttons, 4 axes, 1 hat — doubled for a matched pair)", url: "https://www.thrustmaster.com/en-us/products/t-16000m-fcs/" }
     ]
+  },
+  {
+    id: "t16000m-fcs-space-sim-duo",
+    name: "Thrustmaster T.16000M FCS Space Sim Duo",
+    note: "factory-bundled pair of T.16000M FCS joysticks, sold together as one HOSAS set",
+    layout: "HOSAS",
+    buttons: 30,
+    axes: 8,
+    hats: 2,
+    tier: "pro",
+    sources: [
+      { label: "Thrustmaster — T.16000M FCS Space Sim Duo product page (\"30 action buttons\"; 2 joysticks x 4 axes, 1 hat each)", url: "https://www.thrustmaster.com/en-us/products/t-16000m-fcs-space-sim-duo/" }
+    ]
+  },
+  {
+    id: "hosas-2x-extreme-3d-pro",
+    name: "2x Logitech Extreme 3D Pro (matched pair)",
+    note: "two identical joysticks bought separately, one per hand — a budget HOSAS alternative, not a factory bundle",
+    layout: "HOSAS",
+    buttons: 24,
+    axes: 8,
+    hats: 2,
+    tier: "pro",
+    sources: [
+      { label: "Logitech G — Extreme 3D Pro Joystick product page (single unit: 12 programmable buttons, 8-way hat switch; 4 axes per independent corroborating spec sheets — doubled for a matched pair)", url: "https://www.logitechg.com/en-us/products/space/extreme-3d-pro-joystick.942-000031.html" }
+    ]
   }
 ];
 
@@ -147,6 +173,45 @@ const ROLES = [
     total_core_functions: 43,
     sources: [
       { label: "Star Citizen Wiki — Carrack (Role: Expedition; bridge built around \"extensive scanning, mapping, charting sensor suites\"; the pilot seat is the center of 3 lower-bridge seats — the ship's remote top turret is controlled from a separate starboard station, not the pilot's)", url: "https://starcitizen.tools/Carrack" },
+      KEYBIND_SOURCE
+    ]
+  },
+  {
+    id: "stealth-fighter",
+    role_name: "Stealth Fighter",
+    example_ships: ["Aegis Sabre"],
+    core_functions: [
+      { category: "Flight/Maneuvering", count: 9 },
+      { category: "Weapons", count: 7 },
+      { category: "Shields", count: 4 },
+      { category: "Power", count: 8 },
+      { category: "Countermeasures", count: 3 },
+      { category: "Targeting", count: 7 }
+    ],
+    total_core_functions: 38,
+    tier: "pro",
+    sources: [
+      { label: "Star Citizen Wiki — Sabre (infobox Role: \"Stealth fighter\"; single-seat; pilot fires all four Size 3 VariPuck gimbal-mounted gun hardpoints directly, no separate gunner station; two Size 1 Shimmer shields, 4,488 HP total)", url: "https://starcitizen.tools/Sabre" },
+      KEYBIND_SOURCE
+    ]
+  },
+  {
+    id: "mining-vessel",
+    role_name: "Mining Vessel",
+    example_ships: ["MISC Prospector"],
+    core_functions: [
+      { category: "Flight/Maneuvering", count: 9 },
+      { category: "Weapons", count: 7 },
+      { category: "Shields", count: 4 },
+      { category: "Power", count: 8 },
+      { category: "Countermeasures", count: 3 },
+      { category: "Targeting", count: 7 },
+      { category: "Scanning", count: 4 }
+    ],
+    total_core_functions: 42,
+    tier: "pro",
+    sources: [
+      { label: "Star Citizen Wiki — Prospector (infobox Role: \"Prospecting / Mining\"; single-seat; pilot fires two Size 1 gimbal-mounted gun hardpoints directly; three Size 1 shield generators; dedicated scanner \"designed to targeting pockets directly, pin-pointing specific resources\")", url: "https://starcitizen.tools/Prospector" },
       KEYBIND_SOURCE
     ]
   }
